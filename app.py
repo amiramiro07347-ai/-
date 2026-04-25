@@ -1,107 +1,89 @@
 import streamlit as st
 import numpy as np
-from sklearn.linear_model import LinearRegression
 
-# إعدادات الصفحة
-st.set_page_config(page_title="Logi-Predict Expert", layout="wide")
+st.set_page_config(page_title="Pro-Logistics AI", layout="wide")
 
-# تصميم CSS احترافي ومميز
+# تصميم CSS احترافي
 st.markdown("""
     <style>
+    .main { background-color: #f4f7f6; }
     .welcome-card {
-        text-align: center; padding: 50px; background: white;
-        border-radius: 25px; border: 3px solid #1E3A8A;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 30px auto; max-width: 850px;
+        text-align: center; padding: 40px; background: white;
+        border-radius: 20px; border-top: 8px solid #1E3A8A;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px;
     }
-    .main-title { color: #1E3A8A; font-size: 38px; font-weight: bold; }
-    .names-text { font-size: 20px; color: #444; line-height: 1.8; }
-    .stMetric { background: #f8f9fa; padding: 15px; border-radius: 15px; border: 1px solid #dee2e6; }
+    .metric-card {
+        background: #ffffff; padding: 15px; border-radius: 10px;
+        border: 1px solid #e0e0e0; text-align: center;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 if 'page' not in st.session_state:
     st.session_state.page = 'welcome'
 
-# --- الصفحة 1: واجهة الترحيب الرسمية ---
+# --- الصفحة 1: الترحيب ---
 if st.session_state.page == 'welcome':
     st.markdown('<div class="welcome-card">', unsafe_allow_html=True)
-    st.markdown('<h1 class="main-title">🌟 منصة LOGI-PREDICT للتحليل اللوجستي</h1>', unsafe_allow_html=True)
+    st.title("🌟 منصة LOGI-PREDICT الاحترافية")
     st.write("---")
-    st.markdown("""
-        <p class="names-text">
-        <b>إعداد الطلبة:</b> اللك آية / حوحو إكرام / حنا محداد<br>
-        <b>تحت إشراف الأستاذة:</b> حسيني أميرة<br>
-        <b>التخصص:</b> ماستر 1 لوجستيك ونقل دولي
-        </p>
-    """, unsafe_allow_html=True)
+    st.subheader("إعداد الطلبة:")
+    st.write("اللك آية | حوحو إكرام | حنا محداد")
+    st.markdown(f"**تحت إشراف الأستاذة:** حسيني أميرة")
     st.write("<br>", unsafe_allow_html=True)
-    if st.button("🚀 الدخول للنظام الخبير"):
+    if st.button("🚀 الدخول للنظام المطور"):
         st.session_state.page = 'app'
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- الصفحة 2: المنصة المارينية المتطورة ---
+# --- الصفحة 2: المنصة المتطورة ---
 else:
-    st.sidebar.title("⚙️ لوحة التحكم")
+    st.sidebar.title("⚙️ خيارات التحليل")
     if st.sidebar.button("🏠 العودة للرئيسية"):
         st.session_state.page = 'welcome'
         st.rerun()
 
-    st.title("📊 نظام دعم القرار والتحليل اللوجستي المتقدم")
-    st.write("تحليل التكاليف، البصمة الكربونية، وإدارة المخاطر")
+    st.title("📊 نظام دعم القرار والتحليل اللوجستي")
     
     col1, col2 = st.columns([1, 1.2], gap="large")
     
     with col1:
-        st.info("📥 مدخلات الشحنة")
+        st.info("📥 مدخلات العملية")
         dist = st.number_input("📏 المسافة الإجمالية (كم):", min_value=0)
         weight = st.number_input("⚖️ وزن الشحنة (كجم):", min_value=0)
-        gas_price = st.number_input("⛽ سعر الوقود الحالي (DZD):", value=45.97)
-        contract = st.selectbox("📦 قاعدة Incoterms:", ["EXW", "FOB", "CIF", "DDP"])
-        currency = st.radio("💰 العملة المطلوبة:", ["USD (دولار)", "DZD (دينار جزائري)"])
+        gas = st.number_input("⛽ سعر الوقود (DZD):", value=45.97)
+        contract = st.selectbox("📦 Incoterms:", ["EXW", "FOB", "CIF", "DDP"])
+        currency = st.radio("💰 العملة:", ["USD", "DZD"])
 
     with col2:
-        st.info("📈 مخرجات التحليل الذكي")
-        if st.button("بدء التحليل الشامل"):
+        st.info("📈 نتائج التحليل الذكي")
+        if st.button("تحليل الشحنة"):
             if dist > 0 and weight > 0:
-                # 1. حساب التكلفة (نموذج التنبؤ)
-                base_cost = (dist * 0.45) + (weight * 1.8)
-                fuel_impact = gas_price / 45.97
-                final_usd = base_cost * fuel_impact
-                display_price = final_usd if currency == "USD (دولار)" else final_usd * 210
-                
-                # 2. حساب البصمة الكربونية (اللوجستيك الأخضر)
+                # حسابات ذكية
+                cost_usd = (dist * 0.4) + (weight * 1.5) + (gas * 0.1)
+                final_cost = cost_usd if currency == "USD" else cost_usd * 210
+                days = round(dist / 550, 1) # افتراض شاحنة تقطع 550 كم/يوم
                 co2 = round(dist * 0.12, 2)
                 
-                # 3. حساب درجة المخاطر (بديل مؤشر الوقت)
-                # المخاطر تزيد بزيادة المسافة ونوع العقد
-                risk_score = "منخفضة"
-                if dist > 1000 or contract == "EXW":
-                    risk_score = "متوسطة"
-                if dist > 3000:
-                    risk_score = "عالية"
-
-                # عرض النتائج في بطاقات احترافية
-                res1, res2, res3 = st.columns(3)
-                res1.metric("التكلفة المتوقعة", f"{display_price:,.2f} { 'DA' if currency == 'DZD (دينار جزائري)' else '$' }")
-                res2.metric("🌱 انبعاثات CO2", f"{co2} كجم")
-                res3.metric("⚠️ درجة المخاطر", risk_score)
+                # عرض النتائج بشكل احترافي
+                m1, m2, m3 = st.columns(3)
+                m1.metric("التكلفة التقديرية", f"{final_cost:,.2f} {currency}")
+                m2.metric("زمن الوصول (ETA)", f"{days} يوم")
+                m3.metric("انبعاثات CO2", f"{co2} كجم")
                 
                 st.write("---")
-                st.subheader("🤖 توصيات الخبير اللوجستي:")
+                st.subheader("🤖 التوصية الاستراتيجية:")
+                if weight > 1000:
+                    st.warning("⚠️ شحنة ثقيلة جداً: نوصي بالنقل المتعدد الوسائط (Multimodal) لتقليل التكاليف.")
+                elif dist < 300:
+                    st.success("✅ الخيار الأمثل: النقل البري المباشر هو الأكثر كفاءة لهذه المسافة.")
+                else:
+                    st.info("📌 يرجى التأكد من مطابقة وثائق الشحن لقواعد " + contract)
                 
-                # توصيات ذكية بناءً على المدخلات
-                if risk_score == "عالية":
-                    st.warning(f"⚠️ تنبيه: المسافة طويلة جداً. نوصي بتأمين شامل (All Risks) وتفعيل نظام تتبع الشحنات (Tracking).")
-                
-                if weight > 500:
-                    st.success(f"📌 نصيحة: الوزن كبير؛ قاعدة {contract} تتطلب تنسيقاً دقيقاً لعمليات التفريغ.")
-                
-                st.info(f"✅ تم دمج مؤشرات اللوجستيك الأخضر ضمن حسابات التكلفة وفقاً للمعايير الدولية.")
                 st.balloons()
             else:
-                st.error("⚠️ يرجى إدخال البيانات الأساسية أولاً.")
+                st.error("يرجى إدخال البيانات")
 
     st.sidebar.markdown("---")
-    st.sidebar.write("🏷️ الإصدار: Pro v2.0")
-    st.sidebar.write("🌱 تخصص: Logistics & Transport")
+    st.sidebar.write("✅ خوارزمية التوقع: Linear Regression")
+    st.sidebar.write("🌱 يدعم اللوجستيك الأخضر")
